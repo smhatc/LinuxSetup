@@ -29,7 +29,8 @@ Feel free to take inspiration, reproduce my setup, or fork/clone and adjust it t
 
 1. The specific Linux distribution being accounted for in the script and having any other required external files available.
 2. Various packages required for the installation of the native/Flatpak applications.
-3. An external folder containing the configuration files for all desired fonts.
-4. A text file containing a list of unwanted stock applications to uninstall for the specific distribution (`applications/example-distro/uninstall-list.txt`).
-5. A text file containing a list of wanted native applications to install for use with the native package manager (`applications/example-distro/native-list.txt`).
-6. A text file containing a list of wanted Flatpak applications to install from Flathub for the specific distribution (`applications/example-distro/flatpak-list.txt`).
+3. Any fonts desired for installation being included uncompressed in the `fonts` directory.
+4. If installing the Starship prompt, ensure to have a Nerd Font installed and enabled in the terminal.
+5. A text file containing a list of unwanted stock applications to uninstall for the specific distribution (`applications/example-distro/uninstall-list.txt`).
+6. A text file containing a list of wanted native applications to install for use with the native package manager (`applications/example-distro/native-list.txt`).
+7. A text file containing a list of wanted Flatpak applications to install from Flathub for the specific distribution (`applications/example-distro/flatpak-list.txt`).
