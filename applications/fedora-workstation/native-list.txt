@@ -13,7 +13,6 @@ gnome-disks
 gnome-screenshot
 gnome-shell-extension-appindicator
 gnome-software
-gnome-system-monitor
 gnome-tweaks
 libappindicator-gtk3
 nautilus
