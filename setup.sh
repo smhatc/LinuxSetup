@@ -7,6 +7,7 @@
 # Variables to use with the "echo" command to separate the various sections and lines of the script's output for an easier review process
 section_separator="##################################################"
 line_separator="--------------------------------------------------"
+line_separator_small="-------------------------"
 
 # Exit codes
 e_missing_osr_file=10
@@ -407,38 +408,90 @@ then
 
         echo "$line_separator"
 
-        # Configuring firewall to allow inbound Syncthing and mDNS traffic, block all other unestablished inbound traffic, and allow outbound traffic
-        echo " > Configuring firewall to allow inbound Syncthing and mDNS traffic, block all other unestablished inbound traffic, and allow all outbound traffic..."
+        # Configuring firewalld
+        echo " > Configuring firewalld..."
 
-        ## Ensuring the firewall is enabled
+        ## Enabling firewalld
+        echo -e "\n > Enabling firewalld..."
         sudo systemctl enable --now firewalld
+        echo "(√) Finished enabling firewalld."
 
-        ## Setting the default zone and assigning it to the network interface
-        sudo firewall-cmd --set-default-zone=FedoraWorkstation
-        net_int=$(ip route show default | awk '/default/ {print $5; exit}')
-        sudo firewall-cmd --zone=FedoraWorkstation --change-interface="$net_int" --permanent
+        echo "$line_separator_small"
 
-        ## Removing all default allowed inbound services
-        for s in $(sudo firewall-cmd --zone=FedoraWorkstation --list-services)
+        ## Setting the default zone and blocking all inbound traffic (meant for any unknown and untrusted connections)
+        default_zone="public"
+        echo " > Setting the default zone and blocking all inbound traffic..."
+        sudo firewall-cmd --set-default-zone="$default_zone"
+        ### Removing all default allowed inbound services on default zone
+        for s in $(sudo firewall-cmd --zone="$default_zone" --list-services)
         do
-                sudo firewall-cmd --zone=FedoraWorkstation --remove-service="$s" --permanent
+                sudo firewall-cmd --zone="$default_zone" --remove-service="$s" --permanent
         done
-
-        ## Removing all default allowed inbound ports
-        for p in $(sudo firewall-cmd --zone=FedoraWorkstation --list-ports)
+        ### Removing all default allowed inbound ports on default zone
+        for p in $(sudo firewall-cmd --zone="$default_zone" --list-ports)
         do
-                sudo firewall-cmd --zone=FedoraWorkstation --remove-port="$p" --permanent
+                sudo firewall-cmd --zone="$default_zone" --remove-port="$p" --permanent
         done
+        echo "(√) Finished setting the default zone and blocking all inbound traffic."
 
-        ## Allowing inbound Syncthing and mDNS traffic
-        sudo firewall-cmd --zone=FedoraWorkstation --add-service=syncthing --permanent
-        sudo firewall-cmd --zone=FedoraWorkstation --add-service=mdns --permanent
+        echo "$line_separator_small"
+        
+        ## Allowing inbound Syncthing and mDNS traffic on another, trusted zone, and blocking all other traffic
+        trusted_zone="home"
+        echo " > Allowing inbound Syncthing and mDNS traffic on another, trusted zone, and blocking all other traffic..."
+        ### Removing all default allowed inbound services on trusted zone
+        for s in $(sudo firewall-cmd --zone="$trusted_zone" --list-services)
+        do
+                sudo firewall-cmd --zone="$trusted_zone" --remove-service="$s" --permanent
+        done
+        ### Removing all default allowed inbound ports on trusted zone
+        for p in $(sudo firewall-cmd --zone="$trusted_zone" --list-ports)
+        do
+                sudo firewall-cmd --zone="$trusted_zone" --remove-port="$p" --permanent
+        done
+        ### Allowing inbound Syncthing and mDNS traffic on trusted zone
+        sudo firewall-cmd --zone="$trusted_zone" --add-service=syncthing --permanent
+        sudo firewall-cmd --zone="$trusted_zone" --add-service=mdns --permanent
+        echo "(√) Finished allowing inbound Syncthing and mDNS traffic on another, trusted zone, and blocking all other traffic."
+
+        echo "$line_separator_small"
+
+        ## Applying the trusted zone to trusted network connections
+        trusted_connections_list="./configurations/fedora-workstation/trusted-connections-list.txt"
+        echo " > Applying the trusted zone to trusted network connections..."
+        if [[ ! -r "$trusted_connections_list" ]]; then
+                echo '(!) No trusted connections list found.'
+                echo '(!) Current trusted connections list location is set to' "\"${trusted_connections_list}\". Skipping network zone assignment..."
+        else
+                while IFS= read -r name || [[ -n "$name" ]]; do
+                        name="${name%%#*}"
+                        name="${name#"${name%%[![:space:]]*}"}"
+                        name="${name%"${name##*[![:space:]]}"}"
+                        [[ -z "$name" ]] && continue
+
+                        if sudo nmcli connection show "$name" >/dev/null 2>&1; then
+                                if sudo nmcli connection modify "$name" connection.zone "$trusted_zone" >/dev/null 2>&1; then
+                                        echo "Applied zone \"${trusted_zone}\" to \"${name}\"."
+                                else
+                                        echo '(!) Failed to apply zone for' "\"${name}\"."
+                                fi
+                        else
+                                echo '(!) Profile for' "\"${name}\" not present. Skipping..."
+                        fi
+                done <"$trusted_connections_list"
+        fi
+        echo "(√) Finished applying the trusted zone to trusted network connections."
+
+        echo "$line_separator_small"
 
         ## Reloading the firewall to apply the changes immediately and printing the status
+        echo " > Reloading the firewall to apply the changes immediately and printing the status..."
         sudo firewall-cmd --reload
-        sudo firewall-cmd --zone=FedoraWorkstation --list-all
+        sudo firewall-cmd --zone="$default_zone" --list-all
+        sudo firewall-cmd --zone="$trusted_zone" --list-all
+        echo "(√) Finished reloading the firewall to apply the changes immediately and printing the status."
 
-        echo "(√) Finished configuring firewall to allow inbound Syncthing and mDNS traffic, block all other unestablished inbound traffic, and allow all outbound traffic."
+        echo -e "\n(√) Finished configuring firewalld."
 
         echo "$line_separator"
 
