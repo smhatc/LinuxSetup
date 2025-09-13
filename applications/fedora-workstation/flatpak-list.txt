@@ -4,7 +4,6 @@ com.obsproject.Studio
 io.missioncenter.MissionCenter
 org.gimp.GIMP
 org.gnome.baobab
-org.gnome.Boxes
 org.gnome.Calculator
 org.gnome.Characters
 org.gnome.Connections
