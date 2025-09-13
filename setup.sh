@@ -522,6 +522,15 @@ then
         psql -c "ALTER ROLE $USER WITH SUPERUSER;"
         echo "(√) Finished configuring PostgreSQL."
 
+        echo "$line_separator"
+
+        # QEMU/KVM/libvirt configuration
+        echo " > Configuring QEMU/KVM/libvirt..."
+        sudo systemctl enable --now libvirtd
+        lsmod | grep kvm
+        sudo usermod -aG libvirt $(whoami)
+        echo "(√) Finished configuring QEMU/KVM/libvirt."
+
         echo -e "\n(√) Finished applying configurations."
 else
         echo '(!) Unknown distribution detected. The script does not know how to handle applying system/application configurations for this system. Exiting...'
