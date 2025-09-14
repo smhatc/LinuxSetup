@@ -24,5 +24,6 @@ python
 python3-pip
 rsync
 syncthing
+virtualbox
 yubikey-manager
 @virtualization
