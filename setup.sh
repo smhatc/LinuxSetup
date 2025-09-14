@@ -524,12 +524,12 @@ then
 
         echo "$line_separator"
 
-        # QEMU/KVM/libvirt configuration
-        echo " > Configuring QEMU/KVM/libvirt..."
+        # QEMU/KVM/libvirt and VirtualBox configuration
+        echo " > Configuring QEMU/KVM/libvirt and VirtualBox..."
         sudo systemctl enable --now libvirtd
         lsmod | grep kvm
-        sudo usermod -aG libvirt $(whoami)
-        echo "(√) Finished configuring QEMU/KVM/libvirt."
+        sudo usermod -aG libvirt,vboxusers $(whoami)
+        echo "(√) Finished configuring QEMU/KVM/libvirt and VirtualBox."
 
         echo -e "\n(√) Finished applying configurations."
 else
