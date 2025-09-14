@@ -529,6 +529,7 @@ then
         sudo systemctl enable --now libvirtd
         lsmod | grep kvm
         sudo usermod -aG libvirt,vboxusers $(whoami)
+        sudo mokutil --import /etc/pki/akmods/certs/public_key.der
         echo "(√) Finished configuring QEMU/KVM/libvirt and VirtualBox."
 
         echo -e "\n(√) Finished applying configurations."
