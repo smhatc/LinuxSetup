@@ -31,13 +31,10 @@ echo -e "${section_separator}\n"
 detected_distro=""
 echo " > Starting distribution detection..."
 
-if [[ -f /etc/os-release ]]
-then
+if [[ -f /etc/os-release ]]; then
         source /etc/os-release
-        if [[ "$ID" == "fedora" ]]
-        then
-                if [[ "${VARIANT_ID:-}" == "workstation" ]]
-                then
+        if [[ "$ID" == "fedora" ]]; then
+                if [[ "${VARIANT_ID:-}" == "workstation" ]]; then
                         detected_distro="Fedora Workstation"
                         echo "(√) Distribution detected as \"${detected_distro}\"."
                 else
@@ -66,8 +63,7 @@ echo -e "${section_separator}\n"
 fonts_folder="./fonts/"
 echo " > Defining fonts location..."
 
-if [[ -e "$fonts_folder" ]]
-then
+if [[ -e "$fonts_folder" ]]; then
         echo "(√) Fonts folder was found at \"${fonts_folder}\"."
 else
         echo '(!) Fonts folder was not found at the expected location.'
@@ -81,11 +77,9 @@ echo "$line_separator"
 uninstall_list=""
 echo " > Defining uninstallation list location..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         uninstall_list="./applications/fedora-workstation/uninstall-list.txt"
-        if [[ -f "$uninstall_list" ]]
-        then
+        if [[ -f "$uninstall_list" ]]; then
                 echo "(√) List of unwanted stock applications to uninstall was found at \"${uninstall_list}\"."
         else
                 echo '(!) List of unwanted stock applications to uninstall was not found at the expected location.'
@@ -103,11 +97,9 @@ echo "$line_separator"
 native_list=""
 echo " > Defining native installation list location..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         native_list="./applications/fedora-workstation/native-list.txt"
-        if [[ -f "$native_list" ]]
-        then
+        if [[ -f "$native_list" ]]; then
                 echo "(√) List of wanted native applications to install was found at \"${native_list}\"."
         else
                 echo '(!) List of wanted native applications to install was not found at the expected location.'
@@ -125,11 +117,9 @@ echo "$line_separator"
 flatpak_list=""
 echo " > Defining Flatpak installation list location..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         flatpak_list="./applications/fedora-workstation/flatpak-list.txt"
-        if [[ -f "$flatpak_list" ]]
-        then
+        if [[ -f "$flatpak_list" ]]; then
                 echo "(√) List of wanted Flatpak applications to install was found at \"${flatpak_list}\"."
         else
                 echo '(!) List of wanted Flatpak applications to install was not found at the expected location.'
@@ -151,8 +141,7 @@ echo -e "${section_separator}\n"
 
 echo " > Starting installation of script dependencies..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         sudo dnf install curl distribution-gpg-keys dnf-plugins-core findutils flatpak wget -y
         echo "(√) Finished installation of script dependencies."
 else
@@ -183,11 +172,10 @@ echo -e "${section_separator}\n"
 
 echo " > Starting uninstallation of unwanted stock applications..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # External uninstallation list
         echo -e "\n > Uninstalling the provided external list of unwanted stock applications..."
-        xargs sudo dnf remove -y < "$uninstall_list"
+        xargs sudo dnf remove -y <"$uninstall_list"
         echo "(√) Finished uninstalling the provided external list of unwanted stock applications."
 
         echo "$line_separator"
@@ -196,7 +184,7 @@ then
         echo " > Uninstalling unwanted default groups..."
         sudo dnf group remove libreoffice -y
         echo "(√) Finished uninstalling unwanted default groups."
-        
+
         echo -e "\n(√) Finished uninstallation of unwanted stock applications."
 else
         echo '(!) Unknown distribution detected. The script does not know how to handle uninstalling unwanted stock applications for this system. Exiting...'
@@ -226,19 +214,18 @@ echo -e "${section_separator}\n"
 
 echo " > Adding repositories..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # Brave Browser
         echo -e "\n > Adding Brave Browser repository..."
         sudo dnf config-manager addrepo --from-repofile=https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
         echo "(√) Finished adding Brave Browser repository."
-        
+
         echo "$line_separator"
 
         # Visual Studio Code
         echo " > Adding Visual Studio Code repository..."
         sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-        echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
+        echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo >/dev/null
         echo "(√) Finished adding Visual Studio Code repository."
 
         echo "$line_separator"
@@ -276,8 +263,7 @@ echo -e "${section_separator}\n"
 
 echo " > Starting installation of codecs, firmware, and drivers..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # RPM Fusion codecs, firmware, and drivers
         echo "\n > Installing RPM Fusion codecs, firmware, and drivers..."
         sudo dnf swap ffmpeg-free ffmpeg --allowerasing -y
@@ -306,11 +292,10 @@ echo -e "${section_separator}\n"
 
 echo " > Starting installation of native package manager applications..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # External native applications list
         echo -e "\n > Installing the provided external list of native applications..."
-        xargs sudo dnf install -y < "$native_list"
+        xargs sudo dnf install -y <"$native_list"
         echo "(√) Finished installing the provided external list of native applications."
 
         echo "$line_separator"
@@ -338,8 +323,7 @@ echo -e "${section_separator}\n"
 
 echo " > Starting installation of native direct download applications..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # Yubico Authenticator
         echo -e "\n > Installing Yubico Authenticator..."
         wget -P ~ https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz
@@ -379,7 +363,7 @@ then
         # Starship prompt
         echo " > Installing Starship prompt..."
         sudo curl -sS https://starship.rs/install.sh | sh
-        echo -e '# Starship prompt\neval "$(starship init bash)"' >> ~/.bashrc
+        echo -e '# Starship prompt\neval "$(starship init bash)"' >>~/.bashrc
         starship preset catppuccin-powerline -o ~/.config/starship.toml
         echo "(√) Finished installing Starship prompt."
 else
@@ -399,8 +383,7 @@ echo -e "${section_separator}\n"
 
 echo " > Applying configurations..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # Enabling Syncthing service
         echo -e "\n > Enabling Syncthing service..."
         sudo systemctl enable --now syncthing@$USER.service
@@ -423,30 +406,26 @@ then
         echo " > Setting the default zone and blocking all inbound traffic..."
         sudo firewall-cmd --set-default-zone="$default_zone"
         ### Removing all default allowed inbound services on default zone
-        for s in $(sudo firewall-cmd --zone="$default_zone" --list-services)
-        do
+        for s in $(sudo firewall-cmd --zone="$default_zone" --list-services); do
                 sudo firewall-cmd --zone="$default_zone" --remove-service="$s" --permanent
         done
         ### Removing all default allowed inbound ports on default zone
-        for p in $(sudo firewall-cmd --zone="$default_zone" --list-ports)
-        do
+        for p in $(sudo firewall-cmd --zone="$default_zone" --list-ports); do
                 sudo firewall-cmd --zone="$default_zone" --remove-port="$p" --permanent
         done
         echo "(√) Finished setting the default zone and blocking all inbound traffic."
 
         echo "$line_separator_small"
-        
+
         ## Allowing inbound Syncthing and mDNS traffic on another, trusted zone, and blocking all other traffic
         trusted_zone="home"
         echo " > Allowing inbound Syncthing and mDNS traffic on another, trusted zone, and blocking all other traffic..."
         ### Removing all default allowed inbound services on trusted zone
-        for s in $(sudo firewall-cmd --zone="$trusted_zone" --list-services)
-        do
+        for s in $(sudo firewall-cmd --zone="$trusted_zone" --list-services); do
                 sudo firewall-cmd --zone="$trusted_zone" --remove-service="$s" --permanent
         done
         ### Removing all default allowed inbound ports on trusted zone
-        for p in $(sudo firewall-cmd --zone="$trusted_zone" --list-ports)
-        do
+        for p in $(sudo firewall-cmd --zone="$trusted_zone" --list-ports); do
                 sudo firewall-cmd --zone="$trusted_zone" --remove-port="$p" --permanent
         done
         ### Allowing inbound Syncthing and mDNS traffic on trusted zone
@@ -500,7 +479,7 @@ then
         sudo systemctl disable --now systemd-resolved
         sudo systemctl mask systemd-resolved
         sudo systemctl enable --now dnsconfd
-        echo -e "[main]\ndns=dnsconfd\n\n[global-dns]\nresolve-mode=exclusive\n\n[global-dns-domain-*]\nservers=dns+tls://9.9.9.9#dns.quad9.net,dns+tls://149.112.112.112#dns.quad9.net" > ~/global-dot.conf
+        echo -e "[main]\ndns=dnsconfd\n\n[global-dns]\nresolve-mode=exclusive\n\n[global-dns-domain-*]\nservers=dns+tls://9.9.9.9#dns.quad9.net,dns+tls://149.112.112.112#dns.quad9.net" >~/global-dot.conf
         sudo mv ~/global-dot.conf /etc/NetworkManager/conf.d/global-dot.conf
         sudo chown root:root /etc/NetworkManager/conf.d/global-dot.conf
         sudo chmod 644 /etc/NetworkManager/conf.d/global-dot.conf
@@ -548,11 +527,10 @@ echo -e "${section_separator}\n"
 
 echo " > Starting installation of Flatpak applications..."
 
-if [[ "$detected_distro" == "Fedora Workstation" ]]
-then
+if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         # External Flatpak applications list
         echo -e "\n > Installing the provided external list of Flatpak applications..."
-        xargs flatpak install flathub -y < "$flatpak_list"
+        xargs flatpak install flathub -y <"$flatpak_list"
         echo "(√) Finished installing the provided external list of Flatpak applications."
 
         echo -e "\n(√) Finished installation of Flatpak applications."
