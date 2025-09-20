@@ -16,6 +16,7 @@ gnome-software
 gnome-tweaks
 libappindicator-gtk3
 nautilus
+nmap
 openssh
 postgresql
 postgresql-server
@@ -24,6 +25,7 @@ python
 python3-pip
 rsync
 syncthing
+tcpdump
 virtualbox
 yubikey-manager
 wireshark
