@@ -24,6 +24,8 @@ ptyxis
 python
 python3-pip
 rsync
+ShellCheck
+shfmt
 syncthing
 tcpdump
 virtualbox
