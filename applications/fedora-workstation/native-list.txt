@@ -26,4 +26,5 @@ rsync
 syncthing
 virtualbox
 yubikey-manager
+wireshark
 @virtualization
