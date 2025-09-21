@@ -395,7 +395,7 @@ echo "${process_icon} Applying configurations..."
 if [[ "$detected_distro" == "Fedora Workstation" ]]; then
     # Enabling Syncthing service
     echo -e "\n${process_icon} Enabling Syncthing service..."
-    sudo systemctl enable --now syncthing@$USER.service
+    sudo systemctl enable --now syncthing@"$USER".service
     echo "${success_icon} Finished enabling Syncthing service."
 
     echo "$line_separator"
@@ -504,10 +504,10 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
     # PostgreSQL configuration
     echo "${process_icon} Configuring PostgreSQL..."
     sudo systemctl start postgresql.service
-    sudo -u postgres createuser $USER
-    sudo -u postgres createdb $USER
-    psql -c "ALTER ROLE $USER WITH CREATEDB;"
-    psql -c "ALTER ROLE $USER WITH SUPERUSER;"
+    sudo -u postgres createuser "$USER"
+    sudo -u postgres createdb "$USER"
+    psql -c "ALTER ROLE \"$USER\" WITH CREATEDB;"
+    psql -c "ALTER ROLE \"$USER\" WITH SUPERUSER;"
     echo "${success_icon} Finished configuring PostgreSQL."
 
     echo "$line_separator"
@@ -575,5 +575,5 @@ echo -e "\n${section_separator}"
 echo 'HALT FOR REVIEW AND REBOOT'
 echo -e "${section_separator}\n"
 
-read -p "Press [Enter] to reboot the system... "
+read -r -p "Press [Enter] to reboot the system... "
 reboot
