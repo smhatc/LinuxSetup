@@ -241,9 +241,9 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     # RPM Fusion
     echo "${process_icon} Adding RPM Fusion repositories..."
-    sudo rpmkeys --import /usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-free-fedora-$(rpm -E %fedora)
-    sudo rpmkeys --import /usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$(rpm -E %fedora)
-    sudo dnf --setopt=localpkg_gpgcheck=1 install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y
+    sudo rpmkeys --import /usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-free-fedora-"$(rpm -E %fedora)"
+    sudo rpmkeys --import /usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-"$(rpm -E %fedora)"
+    sudo dnf --setopt=localpkg_gpgcheck=1 install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm -y
     sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
     sudo dnf update @core -y
     sudo dnf install rpmfusion-\*-appstream-data -y
@@ -516,7 +516,7 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
     echo "${process_icon} Configuring QEMU/KVM/libvirt and VirtualBox..."
     sudo systemctl enable --now libvirtd
     lsmod | grep kvm
-    sudo usermod -aG libvirt,vboxusers $(whoami)
+    sudo usermod -aG libvirt,vboxusers "$(whoami)"
 
     ## If Secure Boot is enabled, ask user to specify password to enroll the VirtualBox public key
     if [[ "$(mokutil --sb-state 2>/dev/null)" = "SecureBoot enabled" ]]; then
