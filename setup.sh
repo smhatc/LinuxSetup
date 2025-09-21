@@ -532,6 +532,13 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     echo "${success_icon} Finished configuring QEMU/KVM/libvirt and VirtualBox."
 
+    echo "$line_separator"
+
+    # Wireshark configuration
+    echo "${process_icon} Configuring Wireshark..."
+    sudo usermod -aG wireshark "$(whoami)"
+    echo "${success_icon} Finished configuring Wireshark."
+
     echo -e "\n${success_icon} Finished applying configurations."
 else
     echo "${error_icon} Unknown distribution detected. The script does not know how to handle applying system/application configurations for this system. Exiting..."
