@@ -15,6 +15,7 @@ gnome-shell-extension-appindicator
 gnome-software
 gnome-tweaks
 libappindicator-gtk3
+mokutil
 nautilus
 nmap
 openssh
