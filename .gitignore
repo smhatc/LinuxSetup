@@ -1,3 +1,4 @@
+.vscode
 fonts/
 !fonts/.gitkeep
 configurations/fedora-workstation/trusted-connections-list.txt
