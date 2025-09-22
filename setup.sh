@@ -512,6 +512,7 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     echo "$line_separator_small"
 
+    ## Prompt to specify a password for the default "postgres" user for PostgreSQL
     echo "${process_icon} Please set a password for the \"postgres\" user. Remember this password to use for local database connections..."
     if sudo passwd postgres; then
         echo "${success_icon} Password assigned."
