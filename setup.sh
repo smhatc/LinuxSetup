@@ -503,12 +503,23 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     # PostgreSQL configuration
     echo "${process_icon} Configuring PostgreSQL..."
+    sudo postgresql-setup --initdb
     sudo systemctl start postgresql.service
     sudo -u postgres createuser "$USER"
     sudo -u postgres createdb "$USER"
-    psql -c "ALTER ROLE \"$USER\" WITH CREATEDB;"
-    psql -c "ALTER ROLE \"$USER\" WITH SUPERUSER;"
-    echo "${success_icon} Finished configuring PostgreSQL."
+    sudo -u postgres psql -c "ALTER ROLE \"$USER\" WITH CREATEDB;"
+    sudo -u postgres psql -c "ALTER ROLE \"$USER\" WITH SUPERUSER;"
+
+    echo "$line_separator_small"
+
+    echo "${process_icon} Please set a password for the \"postgres\" user. Remember this password to use for local database connections..."
+    if sudo passwd postgres; then
+        echo "${success_icon} Password assigned."
+    else
+        echo "${error_icon} Password assignment failed or was cancelled."
+    fi
+
+    echo -e "\n${success_icon} Finished configuring PostgreSQL."
 
     echo "$line_separator"
 
