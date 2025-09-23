@@ -547,7 +547,7 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
         if sudo mokutil --import "$cert"; then
             echo -e "${success_icon} Password assigned. Reboot and complete enrollment in the MOK manager.\n"
         else
-            echo "${error_icon} \"mokutil --import\" failed or was cancelled."
+            echo "${error_icon} \"mokutil --import\" failed or was cancelled. Skipping..."
         fi
     fi
 
