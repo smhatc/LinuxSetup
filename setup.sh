@@ -512,12 +512,21 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     echo "$line_separator_small"
 
-    ## Prompt to specify a password for the default "postgres" user for PostgreSQL
-    echo "${process_icon} Please set a password for the \"postgres\" user. Remember this password to use for local database connections..."
-    if sudo passwd postgres; then
-        echo "${success_icon} Password assigned."
+    ## Prompt for local PostgreSQL database password
+    echo "${process_icon} Please set a password for your PostgreSQL user..."
+    if read -r -s -p "Password: " db_pass; then
+        echo
+
+        ### Escape single quotes for safe SQL embedding
+        safe_pass=$(printf '%s' "$db_pass" | sed "s/'/''/g")
+
+        if sudo -u postgres psql -c "ALTER USER \"$USER\" WITH PASSWORD '${safe_pass}';"; then
+            echo "${success_icon} Password assigned. Remember this password and use it when you need to connect to the database."
+        else
+            echo "${error_icon} Failed to set PostgreSQL user password. Skipping...."
+        fi
     else
-        echo "${error_icon} Password assignment failed or was cancelled."
+        echo "${error_icon} Password assignment cancelled or read failed. Skipping..."
     fi
 
     echo -e "\n${success_icon} Finished configuring PostgreSQL."
