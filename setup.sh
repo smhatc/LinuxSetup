@@ -437,9 +437,9 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     echo "$line_separator_small"
 
-    ## Allowing inbound mDNS traffic on another, trusted zone, and blocking all other traffic
+    ## Allowing inbound mDNS and LocalSend traffic on another, trusted zone, and blocking all other traffic
     trusted_zone="home"
-    echo "${process_icon} Allowing inbound mDNS traffic on another, trusted zone, and blocking all other traffic..."
+    echo "${process_icon} Allowing inbound mDNS and LocalSend traffic on another, trusted zone, and blocking all other traffic..."
     ### Removing all default allowed inbound services on trusted zone
     for s in $(sudo firewall-cmd --zone="$trusted_zone" --list-services); do
         sudo firewall-cmd --zone="$trusted_zone" --remove-service="$s" --permanent
@@ -448,9 +448,11 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
     for p in $(sudo firewall-cmd --zone="$trusted_zone" --list-ports); do
         sudo firewall-cmd --zone="$trusted_zone" --remove-port="$p" --permanent
     done
-    ### Allowing inbound mDNS traffic on trusted zone
+    ### Allowing inbound mDNS and LocalSend traffic on trusted zone
     sudo firewall-cmd --zone="$trusted_zone" --add-service=mdns --permanent
-    echo "${success_icon} Finished allowing inbound mDNS traffic on another, trusted zone, and blocking all other traffic."
+    sudo firewall-cmd --zone="$trusted_zone" --add-port=53317/tcp --permanent
+    sudo firewall-cmd --zone="$trusted_zone" --add-port=53317/udp --permanent
+    echo "${success_icon} Finished allowing inbound mDNS and LocalSend traffic on another, trusted zone, and blocking all other traffic."
 
     echo "$line_separator_small"
 
