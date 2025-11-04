@@ -145,7 +145,7 @@ echo -e "${section_separator}\n"
 echo "${process_icon} Starting installation of script dependencies..."
 
 if [[ "$detected_distro" == "Fedora Workstation" ]]; then
-    sudo dnf install curl distribution-gpg-keys dnf-plugins-core findutils flatpak wget -y
+    sudo dnf install curl distribution-gpg-keys dnf-plugins-core findutils flatpak mokutil wget -y
     echo "${success_icon} Finished installation of script dependencies."
 else
     echo "${error_icon} Unknown distribution detected. The script does not know how to handle installing script dependencies for this system. Exiting..."

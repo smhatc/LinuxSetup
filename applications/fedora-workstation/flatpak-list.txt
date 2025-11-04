@@ -7,6 +7,7 @@ org.gnome.baobab
 org.gnome.Calculator
 org.gnome.Characters
 org.gnome.Connections
+org.gnome.Decibels
 org.gnome.font-viewer
 org.gnome.Logs
 org.gnome.Loupe
