@@ -393,8 +393,26 @@ echo -e "${section_separator}\n"
 echo "${process_icon} Applying configurations..."
 
 if [[ "$detected_distro" == "Fedora Workstation" ]]; then
+    # Configuring DNS over TLS
+    echo -e "\n${process_icon} Configuring DNS over TLS..."
+    sudo systemctl disable --now systemd-resolved
+    sudo systemctl mask systemd-resolved
+    sudo systemctl enable --now dnsconfd
+    echo -e "[main]\ndns=dnsconfd\n\n[global-dns]\nresolve-mode=exclusive\n\n[global-dns-domain-*]\nservers=dns+tls://9.9.9.9#dns.quad9.net,dns+tls://149.112.112.112#dns.quad9.net" >~/global-dot.conf
+    sudo mv ~/global-dot.conf /etc/NetworkManager/conf.d/global-dot.conf
+    sudo chown root:root /etc/NetworkManager/conf.d/global-dot.conf
+    sudo chmod 644 /etc/NetworkManager/conf.d/global-dot.conf
+    sudo systemctl restart dnsconfd
+    sudo systemctl restart NetworkManager
+    ls -l /etc/NetworkManager/conf.d
+    cat /etc/NetworkManager/conf.d/global-dot.conf
+    sleep 10s
+    echo "${success_icon} Finished configuring DNS over TLS."
+
+    echo "$line_separator"
+
     # Configuring firewalld
-    echo -e "\n${process_icon} Configuring firewalld..."
+    echo "${process_icon} Configuring firewalld..."
 
     ## Enabling firewalld
     echo -e "\n${process_icon} Enabling firewalld..."
@@ -436,9 +454,9 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
 
     echo "$line_separator_small"
 
-    ## Applying the trusted zone to trusted network connections
+    ## Applying the trusted zone to trusted network connections and disabling automatic/unencrypted DNS
     trusted_connections_list="./configurations/fedora-workstation/trusted-connections-list.txt"
-    echo "${process_icon} Applying the trusted zone to trusted network connections..."
+    echo "${process_icon} Applying the trusted zone to trusted network connections and disabling automatic/unencrypted DNS..."
     if [[ ! -r "$trusted_connections_list" ]]; then
         echo "${error_icon} No trusted connections list found."
         echo "${error_icon} Current trusted connections list location is set to \"${trusted_connections_list}\". Skipping network zone assignment..."
@@ -452,6 +470,15 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
             if sudo nmcli connection show "$name" >/dev/null 2>&1; then
                 if sudo nmcli connection modify "$name" connection.zone "$trusted_zone" >/dev/null 2>&1; then
                     echo "Applied zone \"${trusted_zone}\" to \"${name}\"."
+                    if sudo nmcli connection modify "$name" ipv4.dns "" ipv4.ignore-auto-dns yes ipv6.dns "" ipv6.ignore-auto-dns yes >/dev/null 2>&1; then
+                        if sudo nmcli connection up "$name" >/dev/null 2>&1; then
+                            echo "Disabled automatic DNS for \"${name}\"."
+                        else
+                            echo "${error_icon} Failed to reactivate connection \"${name}\" after DNS change."
+                        fi
+                    else
+                        echo "${error_icon} Failed to disable automatic DNS for \"${name}\"."
+                    fi
                 else
                     echo "${error_icon} Failed to apply zone for \"${name}\"."
                 fi
@@ -460,7 +487,7 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
             fi
         done <"$trusted_connections_list"
     fi
-    echo "${success_icon} Finished applying the trusted zone to trusted network connections."
+    echo "${success_icon} Finished applying the trusted zone to trusted network connections and disabling automatic/unencrypted DNS."
 
     echo "$line_separator_small"
 
@@ -472,24 +499,6 @@ if [[ "$detected_distro" == "Fedora Workstation" ]]; then
     echo "${success_icon} Finished reloading the firewall to apply the changes immediately and printing the status."
 
     echo -e "\n${success_icon} Finished configuring firewalld."
-
-    echo "$line_separator"
-
-    # Configuring DNS over TLS
-    echo "${process_icon} Configuring DNS over TLS..."
-    sudo systemctl disable --now systemd-resolved
-    sudo systemctl mask systemd-resolved
-    sudo systemctl enable --now dnsconfd
-    echo -e "[main]\ndns=dnsconfd\n\n[global-dns]\nresolve-mode=exclusive\n\n[global-dns-domain-*]\nservers=dns+tls://9.9.9.9#dns.quad9.net,dns+tls://149.112.112.112#dns.quad9.net" >~/global-dot.conf
-    sudo mv ~/global-dot.conf /etc/NetworkManager/conf.d/global-dot.conf
-    sudo chown root:root /etc/NetworkManager/conf.d/global-dot.conf
-    sudo chmod 644 /etc/NetworkManager/conf.d/global-dot.conf
-    sudo systemctl restart dnsconfd
-    sudo systemctl restart NetworkManager
-    ls -l /etc/NetworkManager/conf.d
-    nmcli device show | grep IP4.DNS
-    sleep 10s
-    echo "${success_icon} Finished configuring DNS over TLS."
 
     echo "$line_separator"
 
