@@ -18,5 +18,6 @@ org.gtk.Gtk3theme.adw-gtk3
 org.gtk.Gtk3theme.adw-gtk3-dark
 org.kde.kdenlive
 org.keepassxc.KeePassXC
+org.localsend.localsend_app
 org.onlyoffice.desktopeditors
 us.zoom.Zoom
