@@ -19,7 +19,9 @@ libreoffice*
 loupe
 malcontent-control
 mediawriter
+papers
 rhythmbox
+showtime
 simple-scan
 snapshot
 totem
